@@ -66,5 +66,5 @@ pub unsafe trait InterruptNumber: Copy {
     /// Return the interrupt number associated with this variant.
     ///
     /// See trait documentation for safety requirements.
-    fn number(self) -> u16;
+    fn number(self) -> u32;
 }
