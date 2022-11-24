@@ -31,7 +31,7 @@ pub mod asm;
 pub mod delay;
 pub mod interrupt;
 pub mod register;
-pub mod peripherals;
+pub mod peripheral;
 
 #[macro_use]
 mod macros;

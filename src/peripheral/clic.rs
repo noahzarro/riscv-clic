@@ -3,7 +3,7 @@ use volatile_register::RO;
 use volatile_register::RW;
 
 use crate::interrupt::InterruptNumber;
-use crate::peripherals::CLIC;
+use crate::peripheral::CLIC;
 use crate::register::mcause;
 
 /// Interrupt block
