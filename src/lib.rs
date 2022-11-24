@@ -33,6 +33,9 @@ pub mod interrupt;
 pub mod register;
 pub mod peripheral;
 
+pub use crate::peripheral::Peripherals;
+
+
 #[macro_use]
 mod macros;
 
