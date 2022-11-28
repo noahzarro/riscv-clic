@@ -110,6 +110,19 @@ macro_rules! write_csr_rv32 {
     };
 }
 
+macro_rules! write_csr_as {
+    ($register:ident, $csr_number:literal) => {
+        write_csr!($csr_number);
+
+        /// Reads the CSR
+        #[inline]
+        pub fn write(csr_struct:$register) {
+            unsafe { _write(csr_struct.bits) }
+
+        }
+    };
+}
+
 macro_rules! write_csr_as_usize {
     ($csr_number:literal) => {
         write_csr!($csr_number);
