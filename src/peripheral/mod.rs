@@ -1,15 +1,51 @@
 pub mod clic;
-use core::ops;
+use core::{ops, marker::PhantomData};
 
 
 pub struct Peripherals {
-    pub CLIC: CLIC
+    pub CLIC: CLIC,
+    _priv: (),
+}
+
+// NOTE `no_mangle` is used here to prevent linking different minor versions of this crate as that
+// would let you `take` the core peripherals more than once (one per minor version)
+#[no_mangle]
+static CORE_PERIPHERALS: () = ();
+
+/// Set to `true` when `take` or `steal` was called to make `Peripherals` a singleton.
+static mut TAKEN: bool = false;
+
+impl Peripherals {
+    /// Returns all the core peripherals *once*
+    #[inline]
+    pub fn take() -> Option<Self> {
+        critical_section::with(|_| {
+            if unsafe { TAKEN } {
+                None
+            } else {
+                Some(unsafe { Peripherals::steal() })
+            }
+        })
+    }
+
+    /// Unchecked version of `Peripherals::take`
+    #[inline]
+    pub unsafe fn steal() -> Self {
+        TAKEN = true;
+
+        Peripherals {
+            CLIC: CLIC {
+                _marker: PhantomData,
+            },
+            _priv: (),
+        }
+    }
 }
 
 /// Nested Vector Interrupt Controller
 #[allow(clippy::upper_case_acronyms)]
 pub struct CLIC {
-    //_marker: PhantomData<*const ()>,
+    _marker: PhantomData<*const ()>,
 }
 
 unsafe impl Send for CLIC {}
