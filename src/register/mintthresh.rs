@@ -26,6 +26,11 @@ impl Mintthresh {
     pub fn set_thresh(&mut self, threshold:u8) -> () {
         self.bits.set_bits(0..8, threshold.into());
     }
+
+    #[inline]
+    pub fn new(bits:usize) -> Mintthresh{
+        Mintthresh { bits: bits }
+    }
 }
 
 read_csr_as!(Mintthresh, 0x347);
