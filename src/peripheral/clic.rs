@@ -240,8 +240,8 @@ impl CLIC {
     }
 
     // Gets how many hardware bits are actually implemented in the clicintctl registers
-    pub unsafe fn get_possible_level_bits(&mut self) -> u32 {
-        let before = (*Self::PTR).clicinfo.read();
+    pub fn get_possible_level_bits(&mut self) -> u32 {
+        let before = unsafe { (*Self::PTR).clicinfo.read() };
         read_bits(before, 24, 21)
     }
 
