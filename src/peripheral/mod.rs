@@ -52,7 +52,7 @@ unsafe impl Send for CLIC {}
 
 impl CLIC {
     /// Pointer to the register block
-    pub const PTR: *const clic::RegisterBlock = 0xE000_E100 as *const _;
+    pub const PTR: *const clic::RegisterBlock = 0x1A200000 as *const _;
 }
 
 impl ops::Deref for CLIC {
