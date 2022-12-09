@@ -6,6 +6,28 @@ use crate::interrupt::InterruptNumber;
 use crate::peripheral::CLIC;
 use crate::register::mcause;
 
+/// Writes the `bits` into `base_values` at pos [low_bit, high_bit] both included
+#[inline]
+fn write_bits(base_value: u32, high_bit: u8, low_bit: u8, bits: u32) -> u32 {
+    let mut mask = 0;
+    for i in low_bit..high_bit + 1 {
+        mask += 1 << i;
+    }
+    let offset = low_bit;
+    (base_value & !mask) | bits << offset
+}
+
+/// Reads the bits from `base_values` at pos [low_bit, high_bit] both included
+#[inline]
+fn read_bits(base_value: u32, high_bit: u8, low_bit: u8) -> u32 {
+    let mut mask = 0;
+    for i in low_bit..high_bit + 1 {
+        mask += 1 << i;
+    }
+    let offset = low_bit;
+    (base_value & mask) >> offset
+}
+
 /// Interrupt block
 #[repr(C)]
 pub struct InterruptBlock {
@@ -25,7 +47,6 @@ pub struct RegisterBlock {
 }
 
 /// Trigger enum
-
 pub enum Trigger {
     LevelPositive = 0,
     EdgePositive = 1,
@@ -145,9 +166,8 @@ impl CLIC {
     {
         let nr = interrupt.number();
         let before = (*Self::PTR).intcfg[nr].attr.read();
-        // shv is bit #0
-        let mask = !1;
-        let edited = (before & mask) | 1;
+        let edited = write_bits(before, 0, 0, 1);
+
         (*Self::PTR).intcfg[nr].attr.write(edited)
     }
 
@@ -159,9 +179,8 @@ impl CLIC {
     {
         let nr = interrupt.number();
         let before = (*Self::PTR).intcfg[nr].attr.read();
-        // shv is bit #0
-        let mask = !1;
-        let edited = (before & mask) | 0;
+        let edited = write_bits(before, 0, 0, 0);
+
         (*Self::PTR).intcfg[nr].attr.write(edited)
     }
 
@@ -173,13 +192,68 @@ impl CLIC {
     {
         let nr = interrupt.number();
         let before = (*Self::PTR).intcfg[nr].attr.read();
-        // trig are bits #1,2
-        let mask = !6;
-        // trig offset is 1
-        let offset = 1;
-        let edited = (before & mask) | ((trig as u32) << offset);
+        let edited = write_bits(before, 2, 1, trig as u32);
         (*Self::PTR).intcfg[nr].attr.write(edited)
     }
 
     // TODO: implement attr mode bits if needed
+
+    //* CLIC CFG
+
+    // Sets number of bits used for mode int attr fields
+    pub unsafe fn set_mode_bit_with(&mut self, nr_bits: u32) {
+        let before = (*Self::PTR).cliccfg.read();
+        let edited = write_bits(before, 6, 5, nr_bits);
+        (*Self::PTR).cliccfg.write(edited)
+    }
+
+    // Gets number of bits used for mode int attr fields
+    pub unsafe fn get_mode_bit_with(&mut self) -> u32 {
+        let before = (*Self::PTR).cliccfg.read();
+        read_bits(before, 6, 5)
+    }
+
+    // Sets number of bits used for interrupt level value
+    pub unsafe fn set_level_bit_with(&mut self, nr_bits: u32) {
+        let before = (*Self::PTR).cliccfg.read();
+        let edited = write_bits(before, 4, 1, nr_bits);
+        (*Self::PTR).cliccfg.write(edited)
+    }
+
+    // Gets number of bits used for interrupt level value
+    pub unsafe fn get_level_bit_with(&mut self) -> u32 {
+        let before = (*Self::PTR).cliccfg.read();
+        read_bits(before, 4, 1)
+    }
+
+    // Gets flag if vectored interrupt handling is implemented in hardware
+    pub unsafe fn has_interrupt_vectoring(&mut self) -> bool {
+        let before = (*Self::PTR).cliccfg.read();
+        read_bits(before, 0, 0) != 1
+    }
+
+    //* CLIC INFO
+    // Gets actual number of maximum interrupt inputs supported in this implementation
+    pub unsafe fn get_num_int(&mut self) -> u32 {
+        let before = (*Self::PTR).clicinfo.read();
+        read_bits(before, 30, 25)
+    }
+
+    // Gets how many hardware bits are actually implemented in the clicintctl registers
+    pub unsafe fn get_possible_level_bits(&mut self) -> u32 {
+        let before = (*Self::PTR).clicinfo.read();
+        read_bits(before, 24, 21)
+    }
+
+    // Gets version
+    pub unsafe fn get_version(&mut self) -> u32 {
+        let before = (*Self::PTR).clicinfo.read();
+        read_bits(before, 20, 13)
+    }
+
+    // Gets number of maximum interrupt inputs supported
+    pub unsafe fn get_max_interrupts(&mut self) -> u32 {
+        let before = (*Self::PTR).clicinfo.read();
+        read_bits(before, 12, 0)
+    }
 }
