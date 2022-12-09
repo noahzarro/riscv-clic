@@ -99,6 +99,12 @@ pub use self::mhpmeventx::*;
 // Machine CLIC registers
 pub mod mintthresh;
 
+// TODO: Implement the following CSRs
+//pub mod mtvt;
+//pub mod mintstatus;
+//pub mod mclicbase;
+
+
 // TODO: Debug/Trace Registers (shared with Debug Mode)
 
 // TODO: Debug Mode Registers
