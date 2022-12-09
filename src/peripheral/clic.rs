@@ -201,27 +201,27 @@ impl CLIC {
     //* CLIC CFG
 
     // Sets number of bits used for mode int attr fields
-    pub unsafe fn set_mode_bit_with(&mut self, nr_bits: u32) {
+    pub unsafe fn set_mode_bit_width(&mut self, nr_bits: u32) {
         let before = (*Self::PTR).cliccfg.read();
         let edited = write_bits(before, 6, 5, nr_bits);
         (*Self::PTR).cliccfg.write(edited)
     }
 
     // Gets number of bits used for mode int attr fields
-    pub unsafe fn get_mode_bit_with(&mut self) -> u32 {
+    pub unsafe fn get_mode_bit_width(&mut self) -> u32 {
         let before = (*Self::PTR).cliccfg.read();
         read_bits(before, 6, 5)
     }
 
     // Sets number of bits used for interrupt level value
-    pub unsafe fn set_level_bit_with(&mut self, nr_bits: u32) {
+    pub unsafe fn set_level_bit_width(&mut self, nr_bits: u32) {
         let before = (*Self::PTR).cliccfg.read();
         let edited = write_bits(before, 4, 1, nr_bits);
         (*Self::PTR).cliccfg.write(edited)
     }
 
     // Gets number of bits used for interrupt level value
-    pub unsafe fn get_level_bit_with(&mut self) -> u32 {
+    pub unsafe fn get_level_bit_width(&mut self) -> u32 {
         let before = (*Self::PTR).cliccfg.read();
         read_bits(before, 4, 1)
     }
