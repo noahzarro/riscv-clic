@@ -15,6 +15,14 @@ pub enum TrapMode {
     Clic = 3,
 }
 
+/// CLIC sub mode
+/// Currently there is just one mode
+#[cfg(feature="clic")]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum SubMode {
+    Default = 0,
+} 
+
 impl Mtvec {
     /// Returns the contents of the register as raw bits
     #[inline]
@@ -28,6 +36,13 @@ impl Mtvec {
         self.bits - (self.bits & 0b11)
     }
 
+    /// Returns the trap-vector base-address in CLIC mode
+    #[inline]
+    #[cfg(feature="clic")]
+    pub fn address(&self) -> usize {
+        self.bits - (self.bits & 0b111111)
+    }
+
     /// Returns the trap-vector mode
     #[inline]
     pub fn trap_mode(&self) -> Option<TrapMode> {
@@ -35,6 +50,19 @@ impl Mtvec {
         match mode {
             0 => Some(TrapMode::Direct),
             1 => Some(TrapMode::Vectored),
+            #[cfg(feature="clic")]
+            3 => Some(TrapMode::Clic),
+            _ => None,
+        }
+    }
+
+    /// Returns the trap-vector mode
+    #[inline]
+    #[cfg(feature="clic")]
+    pub fn sub_mode(&self) -> Option<SubMode> {
+        let mode = (self.bits & 0b111100) >> 2;
+        match mode {
+            0 => Some(SubMode::Default),
             _ => None,
         }
     }
@@ -48,5 +76,14 @@ write_csr!(0x305);
 #[inline]
 pub unsafe fn write(addr: usize, mode: TrapMode) {
     let bits = addr + mode as usize;
+    _write(bits);
+}
+
+
+#[cfg(feature="clic")]
+/// Writes the CSR including CLIC sub mode
+#[inline]
+pub unsafe fn write(addr: usize, submode:SubMode, mode: TrapMode) {
+    let bits = addr + ((submode as usize) << 2) + mode as usize;
     _write(bits);
 }

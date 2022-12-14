@@ -97,10 +97,12 @@ mod mhpmeventx;
 pub use self::mhpmeventx::*;
 
 // Machine CLIC registers
+#[cfg(feature="clic")]
 pub mod mintthresh;
+#[cfg(feature="clic")]
+pub mod mtvt;
 
 // TODO: Implement the following CSRs
-//pub mod mtvt;
 //pub mod mintstatus;
 //pub mod mclicbase;
 

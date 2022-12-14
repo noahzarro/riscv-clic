@@ -2,7 +2,7 @@
 
 use bit_field::BitField;
 
-/// mie register
+/// mintthresh register
 #[derive(Clone, Copy, Debug)]
 pub struct Mintthresh {
     bits: usize,
