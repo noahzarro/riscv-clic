@@ -39,7 +39,7 @@ write_csr_as!(Mtvt, 0x307);
 
 /// Writes the CSR
 #[inline]
-pub unsafe fn write(addr: usize) {
+pub unsafe fn write_addr(addr: usize) {
     let bits = addr;
     _write(bits);
 }
