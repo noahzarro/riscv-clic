@@ -36,3 +36,10 @@ impl Mtvt {
 read_csr_as!(Mtvt, 0x307);
 
 write_csr_as!(Mtvt, 0x307);
+
+/// Writes the CSR
+#[inline]
+pub unsafe fn write(addr: usize) {
+    let bits = addr;
+    _write(bits);
+}
