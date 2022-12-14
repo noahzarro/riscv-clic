@@ -32,6 +32,7 @@ impl Mtvec {
 
     /// Returns the trap-vector base-address
     #[inline]
+    #[cfg(not(feature="clic"))]
     pub fn address(&self) -> usize {
         self.bits - (self.bits & 0b11)
     }
@@ -74,15 +75,16 @@ write_csr!(0x305);
 
 /// Writes the CSR
 #[inline]
+#[cfg(not(feature="clic"))]
 pub unsafe fn write(addr: usize, mode: TrapMode) {
     let bits = addr + mode as usize;
     _write(bits);
 }
 
 
-#[cfg(feature="clic")]
 /// Writes the CSR including CLIC sub mode
 #[inline]
+#[cfg(feature="clic")]
 pub unsafe fn write(addr: usize, submode:SubMode, mode: TrapMode) {
     let bits = addr + ((submode as usize) << 2) + mode as usize;
     _write(bits);
