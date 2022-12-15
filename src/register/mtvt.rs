@@ -18,13 +18,13 @@ impl Mtvt {
     /// Gets the clic interrupt vector base
     #[inline]
     pub fn get_base(&self) -> usize {
-        self.bits.get_bits()
+        self.bits()
     }
 
     /// Sets the clic interrupt vector base
     #[inline]
     pub fn set_base(&mut self, base:usize) -> () {
-        self.bits.set_bits(base);
+        self.bits = base;
     }
 
     #[inline]
