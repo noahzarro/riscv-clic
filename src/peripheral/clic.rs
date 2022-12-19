@@ -42,7 +42,7 @@ pub struct InterruptBlock {
 pub struct RegisterBlock {
     pub cliccfg: RW<u32>,
     pub clicinfo: RO<u32>,
-    reserved: [u32; 0x1000 - 4 * 2],
+    reserved: [u8; 0x1000 - 4 * 2],
     pub intcfg: [InterruptBlock; 4096],
 }
 
