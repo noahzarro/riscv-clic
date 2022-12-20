@@ -103,7 +103,8 @@ pub mod mintthresh;
 pub mod mtvt;
 
 // TODO: Implement the following CSRs
-//pub mod mintstatus;
+#[cfg(feature="clic")]
+pub mod mintstatus;
 //pub mod mclicbase;
 
 
