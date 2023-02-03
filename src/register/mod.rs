@@ -95,6 +95,7 @@ pub mod minstreth;
 // Machine Counter Setup
 mod mhpmeventx;
 pub use self::mhpmeventx::*;
+pub mod mcountinhibit;
 
 // Machine CLIC registers
 #[cfg(feature="clic")]

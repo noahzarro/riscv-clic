@@ -8,7 +8,7 @@ use crate::register::mcause;
 
 /// Writes the `bits` into `base_values` at pos [low_bit, high_bit] both included
 #[inline]
-fn write_bits(base_value: u32, high_bit: u8, low_bit: u8, bits: u32) -> u32 {
+unsafe fn write_bits(base_value: u32, high_bit: u8, low_bit: u8, bits: u32) -> u32 {
     let mut mask = 0;
     for i in low_bit..high_bit + 1 {
         mask += 1 << i;
