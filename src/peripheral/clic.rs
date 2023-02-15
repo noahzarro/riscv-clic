@@ -42,7 +42,8 @@ pub struct InterruptBlock {
 pub struct RegisterBlock {
     pub cliccfg: RW<u32>,
     pub clicinfo: RO<u32>,
-    reserved: [u8; 0x1000 - 4 * 2],
+    pub clicxnxticonf: RW<u32>,
+    reserved: [u8; 0x1000 - 4 * 3],
     pub intcfg: [InterruptBlock; 4096],
 }
 
@@ -256,4 +257,21 @@ impl CLIC {
         let before = (*Self::PTR).clicinfo.read();
         read_bits(before, 12, 0)
     }
+
+    //* CLIC NXTI
+    // Enables NXTI
+    pub unsafe fn enable_nxti(&mut self) {
+        (*Self::PTR).clicxnxticonf.write(1);
+    }
+
+    // Disables NXTI
+    pub unsafe fn disable_nxti(&mut self) {
+        (*Self::PTR).clicxnxticonf.write(0);
+    }
+
+    // Returns if NXTI is enabled
+    pub unsafe fn is_nxti_enabled(&mut self) -> bool{
+        (*Self::PTR).clicxnxticonf.read() == 0
+    }
+
 }
