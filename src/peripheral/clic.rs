@@ -271,7 +271,7 @@ impl CLIC {
 
     // Returns if NXTI is enabled
     pub unsafe fn is_nxti_enabled(&mut self) -> bool{
-        (*Self::PTR).clicxnxticonf.read() == 0
+        (*Self::PTR).clicxnxticonf.read() != 0
     }
 
 }
